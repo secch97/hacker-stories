@@ -29,26 +29,41 @@ function App() {
   return (
     <div>
       <h1>My Hacker Stories</h1>
-
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" />
-
+      <Search/>
       <hr />
-
-      <ul>
-        {list.map((listItem) => (
-          <li key={listItem.objectID}>
-            <span>
-              <a href={listItem.url}> {listItem.title} </a>
-            </span>
-            <span> {listItem.author} </span>
-            <span> {listItem.num_comments} </span>
-            <span> {listItem.points} </span>
-          </li>
-        ))}
-      </ul>
+      <List/>
     </div>
   );
 }
 
-export { App as default };
+function Search() {
+  return (
+    <div>
+      <label htmlFor="search">Search: </label>
+      <input id="search" type="text" />
+    </div>
+  );
+}
+
+function List() {
+  return (
+    <ul>
+        {
+          list.map((listItem) => (
+            <li key={listItem.objectID}>
+              <span>
+                <a href={listItem.url}> {listItem.title} </a>
+              </span>
+              <span> {listItem.author} </span>
+              <span> {listItem.num_comments} </span>
+              <span> {listItem.points} </span>
+            </li>
+          ))
+        }
+    </ul>
+  );
+}
+
+export { 
+  App as default, 
+};
