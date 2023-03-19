@@ -34,16 +34,21 @@ const App = () => {
       <List/>
     </div>
   );
-}
+};
 
 const Search = () => {
+
+  const handleChange = (event) => {
+    console.log(event.target.value);
+  };
+
   return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" />
+      <input id="search" type="text" onChange={handleChange}/>
     </div>
   );
-}
+};
 
 const List = () => {
   return (
@@ -62,7 +67,7 @@ const List = () => {
         }
     </ul>
   );
-}
+};
 
 export { 
   App as default, 
