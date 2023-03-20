@@ -1,37 +1,40 @@
-const list = [
-  {
-    title: "React",
-    url: "https://reactjs.org/",
-    author: "Jordan Walke",
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: "Redux",
-    url: "https://redux.js.org/",
-    author: "Dan Abramov, Andrew Clark",
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-  {
-    title: "Road to React",
-    url: "https://www.roadtoreact.com/",
-    author: "Robin Wieruch",
-    num_comments: 10,
-    points: 15,
-    objectID: 2,
-  },
-];
+
 
 const App = () => {
+
+  const stories = [
+    {
+      title: "React",
+      url: "https://reactjs.org/",
+      author: "Jordan Walke",
+      num_comments: 3,
+      points: 4,
+      objectID: 0,
+    },
+    {
+      title: "Redux",
+      url: "https://redux.js.org/",
+      author: "Dan Abramov, Andrew Clark",
+      num_comments: 2,
+      points: 5,
+      objectID: 1,
+    },
+    {
+      title: "Road to React",
+      url: "https://www.roadtoreact.com/",
+      author: "Robin Wieruch",
+      num_comments: 10,
+      points: 15,
+      objectID: 2,
+    },
+  ];
+
   return (
     <div>
       <h1>My Hacker Stories</h1>
       <Search/>
       <hr />
-      <List/>
+      <List list={stories}/>
     </div>
   );
 };
@@ -50,22 +53,31 @@ const Search = () => {
   );
 };
 
-const List = () => {
+const List = (props) => {
   return (
     <ul>
         {
-          list.map((listItem) => (
-            <li key={listItem.objectID}>
-              <span>
-                <a href={listItem.url}> {listItem.title} </a>
-              </span>
-              <span> {listItem.author} </span>
-              <span> {listItem.num_comments} </span>
-              <span> {listItem.points} </span>
-            </li>
+          props.list.map((listItem) => (
+            <Item 
+              key={listItem.objectID}
+              listItem={listItem}
+            />
           ))
         }
     </ul>
+  );
+} 
+
+const Item = (props) => {
+  return (
+    <li>
+      <span>
+        <a href={props.listItem.url}>{props.listItem.title}</a>
+      </span>
+      <span> {props.listItem.author}</span>
+      <span> {props.listItem.num_comments}</span>
+      <span> {props.listItem.points}</span>
+    </li>
   );
 };
 
