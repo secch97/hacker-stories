@@ -1,3 +1,4 @@
+import { useState } from "react";
 
 
 const App = () => {
@@ -29,6 +30,8 @@ const App = () => {
     },
   ];
 
+  console.log("App renders");
+
   return (
     <div>
       <h1>My Hacker Stories</h1>
@@ -41,23 +44,32 @@ const App = () => {
 
 const Search = () => {
 
+  const [searchTerm, setSearchTerm] = useState('');
+
   const handleChange = (event) => {
-    console.log(event.target.value);
+    setSearchTerm(event.target.value);
   };
+
+  console.log("Search renders");
 
   return (
     <div>
       <label htmlFor="search">Search: </label>
       <input id="search" type="text" onChange={handleChange}/>
+
+      <p>
+        Searching for <strong>{searchTerm}</strong>
+      </p>
     </div>
   );
 };
 
-const List = (props) => {
+const List = ({list}) => {
+  console.log("List renders");
   return (
     <ul>
         {
-          props.list.map((listItem) => (
+          list.map((listItem) => (
             <Item 
               key={listItem.objectID}
               listItem={listItem}
@@ -68,15 +80,16 @@ const List = (props) => {
   );
 } 
 
-const Item = (props) => {
+const Item = ({listItem}) => {
+  console.log("Item renders")
   return (
     <li>
       <span>
-        <a href={props.listItem.url}>{props.listItem.title}</a>
+        <a href={listItem.url}>{listItem.title}</a>
       </span>
-      <span> {props.listItem.author}</span>
-      <span> {props.listItem.num_comments}</span>
-      <span> {props.listItem.points}</span>
+      <span> {listItem.author}</span>
+      <span> {listItem.num_comments}</span>
+      <span> {listItem.points}</span>
     </li>
   );
 };
