@@ -30,27 +30,28 @@ const App = () => {
     },
   ];
 
-  console.log("App renders");
+  const handleSearch = (event) => {
+    console.log(event.target.value);
+  };
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <Search/>
+      <Search onSearch={handleSearch}/>
       <hr />
       <List list={stories}/>
     </div>
   );
 };
 
-const Search = () => {
+const Search = ({onSearch}) => {
 
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleChange = (event) => {
     setSearchTerm(event.target.value);
+    onSearch(event);
   };
-
-  console.log("Search renders");
 
   return (
     <div>
@@ -65,7 +66,6 @@ const Search = () => {
 };
 
 const List = ({list}) => {
-  console.log("List renders");
   return (
     <ul>
         {
@@ -81,7 +81,6 @@ const List = ({list}) => {
 } 
 
 const Item = ({listItem}) => {
-  console.log("Item renders")
   return (
     <li>
       <span>
