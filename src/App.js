@@ -30,37 +30,44 @@ const App = () => {
     },
   ];
 
+  /* 
+    ======================
+    =       HOOKS        =
+    ======================     
+  */
+  const [searchTerm, setSearchTerm] = useState("");
+  /* 
+    ======================
+    =      HANDLERS      =
+    ======================     
+  */
   const handleSearch = (event) => {
-    console.log(event.target.value);
+    setSearchTerm(event.target.value.trim());
   };
+  /* 
+    ======================
+    =       HELPERS      =
+    ======================     
+  */
+  const searchedStories = stories.filter((story) => (story.title.toLowerCase()).includes(searchTerm.toLowerCase()));
 
+  
+  
   return (
     <div>
       <h1>My Hacker Stories</h1>
       <Search onSearch={handleSearch}/>
       <hr />
-      <List list={stories}/>
+      <List list={searchedStories}/>
     </div>
   );
 };
 
 const Search = ({onSearch}) => {
-
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleChange = (event) => {
-    setSearchTerm(event.target.value);
-    onSearch(event);
-  };
-
   return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange}/>
-
-      <p>
-        Searching for <strong>{searchTerm}</strong>
-      </p>
+      <input id="search" type="text" onChange={onSearch}/>
     </div>
   );
 };
