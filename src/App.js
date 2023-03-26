@@ -74,10 +74,10 @@ const List = ({list}) => {
   return (
     <ul>
         {
-          list.map((listItem) => (
+          list.map(({objectID, ...listItem}) => (
             <Item 
-              key={listItem.objectID}
-              listItem={listItem}
+              key={objectID}
+              {...listItem}
             />
           ))
         }
@@ -85,15 +85,15 @@ const List = ({list}) => {
   );
 } 
 
-const Item = ({listItem}) => {
+const Item = ({title, url, author, num_comments, points}) => {
   return (
     <li>
       <span>
-        <a href={listItem.url}>{listItem.title}</a>
+        <a href={url}>{title}</a>
       </span>
-      <span> {listItem.author}</span>
-      <span> {listItem.num_comments}</span>
-      <span> {listItem.points}</span>
+      <span> {author}</span>
+      <span> {num_comments}</span>
+      <span> {points}</span>
     </li>
   );
 };
