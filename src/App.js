@@ -30,37 +30,42 @@ const App = () => {
     },
   ];
 
+  /* 
+    ======================
+    =       HOOKS        =
+    ======================     
+  */
+  const [searchTerm, setSearchTerm] = useState("React");
+  /* 
+    ======================
+    =      HANDLERS      =
+    ======================     
+  */
   const handleSearch = (event) => {
-    console.log(event.target.value);
+    setSearchTerm(event.target.value.trim());
   };
+  /* 
+    ======================
+    =       HELPERS      =
+    ======================     
+  */
+  const searchedStories = stories.filter((story) => (story.title.toLowerCase()).includes(searchTerm.toLowerCase()));
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <Search onSearch={handleSearch}/>
+      <Search search={searchTerm} onSearch={handleSearch}/>
       <hr />
-      <List list={stories}/>
+      <List list={searchedStories}/>
     </div>
   );
 };
 
-const Search = ({onSearch}) => {
-
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleChange = (event) => {
-    setSearchTerm(event.target.value);
-    onSearch(event);
-  };
-
+const Search = ({search, onSearch}) => {
   return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange}/>
-
-      <p>
-        Searching for <strong>{searchTerm}</strong>
-      </p>
+      <input id="search" type="text" value={search} onChange={onSearch}/>
     </div>
   );
 };
@@ -69,10 +74,10 @@ const List = ({list}) => {
   return (
     <ul>
         {
-          list.map((listItem) => (
+          list.map(({objectID, ...listItem}) => (
             <Item 
-              key={listItem.objectID}
-              listItem={listItem}
+              key={objectID}
+              {...listItem}
             />
           ))
         }
@@ -80,15 +85,15 @@ const List = ({list}) => {
   );
 } 
 
-const Item = ({listItem}) => {
+const Item = ({title, url, author, num_comments, points}) => {
   return (
     <li>
       <span>
-        <a href={listItem.url}>{listItem.title}</a>
+        <a href={url}>{title}</a>
       </span>
-      <span> {listItem.author}</span>
-      <span> {listItem.num_comments}</span>
-      <span> {listItem.points}</span>
+      <span> {author}</span>
+      <span> {num_comments}</span>
+      <span> {points}</span>
     </li>
   );
 };
