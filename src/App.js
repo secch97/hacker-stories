@@ -35,7 +35,7 @@ const App = () => {
     =       HOOKS        =
     ======================     
   */
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("React");
   /* 
     ======================
     =      HANDLERS      =
@@ -51,23 +51,21 @@ const App = () => {
   */
   const searchedStories = stories.filter((story) => (story.title.toLowerCase()).includes(searchTerm.toLowerCase()));
 
-  
-  
   return (
     <div>
       <h1>My Hacker Stories</h1>
-      <Search onSearch={handleSearch}/>
+      <Search search={searchTerm} onSearch={handleSearch}/>
       <hr />
       <List list={searchedStories}/>
     </div>
   );
 };
 
-const Search = ({onSearch}) => {
+const Search = ({search, onSearch}) => {
   return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={onSearch}/>
+      <input id="search" type="text" value={search} onChange={onSearch}/>
     </div>
   );
 };
