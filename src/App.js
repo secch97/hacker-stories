@@ -64,12 +64,12 @@ const App = () => {
   const searchedStories = stories.filter((story) => (story.title.toLowerCase()).includes(searchTerm.toLowerCase().trim()));
 
   return (
-    <div>
+    <>
       <h1>My Hacker Stories</h1>
       <Search search={searchTerm} onSearch={handleSearch}/>
       <hr />
       <List list={searchedStories}/>
-    </div>
+    </>
   );
 };
 
