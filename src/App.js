@@ -1,5 +1,4 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 
 const App = () => {
 
@@ -35,21 +34,26 @@ const App = () => {
     =       HOOKS        =
     ======================     
   */
-  const [searchTerm, setSearchTerm] = useState("React");
+  const [searchTerm, setSearchTerm] = useState(localStorage.getItem("search") ?? "React");
+  
+  useEffect( () => {
+    localStorage.setItem("search", searchTerm);
+  }, [searchTerm]);
   /* 
     ======================
     =      HANDLERS      =
     ======================     
   */
   const handleSearch = (event) => {
-    setSearchTerm(event.target.value.trim());
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
   };
   /* 
     ======================
     =       HELPERS      =
     ======================     
   */
-  const searchedStories = stories.filter((story) => (story.title.toLowerCase()).includes(searchTerm.toLowerCase()));
+  const searchedStories = stories.filter((story) => (story.title.toLowerCase()).includes(searchTerm.toLowerCase().trim()));
 
   return (
     <div>
