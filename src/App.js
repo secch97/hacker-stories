@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
 
+const useSemiPersistentState = (key, initialState) => {
+  const [value, setValue] = useState(localStorage.getItem(key) ?? initialState);
+
+  useEffect(() => {
+    localStorage.setItem(key, value.trim());
+  }, [value, key]);
+
+  return [value, setValue];
+;}
+
+
 const App = () => {
 
   const stories = [
@@ -34,11 +45,8 @@ const App = () => {
     =       HOOKS        =
     ======================     
   */
-  const [searchTerm, setSearchTerm] = useState(localStorage.getItem("search") ?? "React");
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
   
-  useEffect( () => {
-    localStorage.setItem("search", searchTerm);
-  }, [searchTerm]);
   /* 
     ======================
     =      HANDLERS      =
