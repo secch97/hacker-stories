@@ -1,4 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const useSemiPersistentState = (key, initialState) => {
+  const [value, setValue] = useState(localStorage.getItem(key) ?? initialState);
+
+  useEffect(() => {
+    localStorage.setItem(key, value.trim());
+  }, [value, key]);
+
+  return [value, setValue];
+;}
 
 
 const App = () => {
@@ -35,29 +45,31 @@ const App = () => {
     =       HOOKS        =
     ======================     
   */
-  const [searchTerm, setSearchTerm] = useState("React");
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+  
   /* 
     ======================
     =      HANDLERS      =
     ======================     
   */
   const handleSearch = (event) => {
-    setSearchTerm(event.target.value.trim());
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
   };
   /* 
     ======================
     =       HELPERS      =
     ======================     
   */
-  const searchedStories = stories.filter((story) => (story.title.toLowerCase()).includes(searchTerm.toLowerCase()));
+  const searchedStories = stories.filter((story) => (story.title.toLowerCase()).includes(searchTerm.toLowerCase().trim()));
 
   return (
-    <div>
+    <>
       <h1>My Hacker Stories</h1>
       <Search search={searchTerm} onSearch={handleSearch}/>
       <hr />
       <List list={searchedStories}/>
-    </div>
+    </>
   );
 };
 
