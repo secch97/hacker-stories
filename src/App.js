@@ -13,7 +13,7 @@ const useSemiPersistentState = (key, initialState) => {
 
 const App = () => {
 
-  const stories = [
+  const initialStories = [
     {
       title: "React",
       url: "https://reactjs.org/",
@@ -46,6 +46,7 @@ const App = () => {
     ======================     
   */
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+  const [stories, setStories] = useState(initialStories);
   
   /* 
     ======================
@@ -56,6 +57,12 @@ const App = () => {
     const newSearchTerm = event.target.value;
     setSearchTerm(newSearchTerm);
   };
+
+  const handleRemoveStory = (objectID) => {
+    const newStories = stories.filter((story) => objectID !== story.objectID);
+    setStories(newStories);
+  };
+
   /* 
     ======================
     =       HELPERS      =
@@ -75,7 +82,7 @@ const App = () => {
         <strong>Search:</strong>  
       </InputWithLabel>
       <hr />
-      <List list={searchedStories}/>
+      <List list={searchedStories} onRemoveItem={handleRemoveStory}/>
     </>
   );
 };
@@ -105,14 +112,15 @@ const InputWithLabel = ({id, value, type="text", onInputChange, isFocused, child
   );
 };
 
-const List = ({list}) => {
+const List = ({list, onRemoveItem}) => {
   return (
     <ul>
         {
-          list.map(({objectID, ...listItem}) => (
+          list.map((listItem) => (
             <Item 
-              key={objectID}
+              key={listItem.objectID}
               {...listItem}
+              onRemoveItem={onRemoveItem}
             />
           ))
         }
@@ -120,7 +128,8 @@ const List = ({list}) => {
   );
 } 
 
-const Item = ({title, url, author, num_comments, points}) => {
+const Item = ({objectID, title, url, author, num_comments, points, onRemoveItem}) => {
+   
   return (
     <li>
       <span>
@@ -129,6 +138,9 @@ const Item = ({title, url, author, num_comments, points}) => {
       <span> {author}</span>
       <span> {num_comments}</span>
       <span> {points}</span>
+      <span>
+        <button type="button" onClick={() => onRemoveItem(objectID)}>Dismiss</button>
+      </span>
     </li>
   );
 };
