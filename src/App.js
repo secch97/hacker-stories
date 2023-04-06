@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(localStorage.getItem(key) ?? initialState);
@@ -13,7 +13,7 @@ const useSemiPersistentState = (key, initialState) => {
 
 const App = () => {
 
-  const stories = [
+  const initialStories = [
     {
       title: "React",
       url: "https://reactjs.org/",
@@ -46,6 +46,7 @@ const App = () => {
     ======================     
   */
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+  const [stories, setStories] = useState(initialStories);
   
   /* 
     ======================
@@ -56,6 +57,12 @@ const App = () => {
     const newSearchTerm = event.target.value;
     setSearchTerm(newSearchTerm);
   };
+
+  const handleRemoveStory = (objectID) => {
+    const newStories = stories.filter((story) => objectID !== story.objectID);
+    setStories(newStories);
+  };
+
   /* 
     ======================
     =       HELPERS      =
@@ -66,30 +73,54 @@ const App = () => {
   return (
     <>
       <h1>My Hacker Stories</h1>
-      <Search search={searchTerm} onSearch={handleSearch}/>
+      <InputWithLabel 
+        id="search" 
+        value={searchTerm} 
+        onInputChange={handleSearch}
+        isFocused
+      >
+        <strong>Search:</strong>  
+      </InputWithLabel>
       <hr />
-      <List list={searchedStories}/>
+      <List list={searchedStories} onRemoveItem={handleRemoveStory}/>
     </>
   );
 };
 
-const Search = ({search, onSearch}) => {
+const InputWithLabel = ({id, value, type="text", onInputChange, isFocused, children}) => {
+  //A
+  const inputRef = useRef();
+
+  useEffect(() => {
+    if(isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+  
   return (
     <div>
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" value={search} onChange={onSearch}/>
+      <label htmlFor={id}>{children}</label>
+      &nbsp;
+      <input 
+        ref={inputRef}
+        id={id} 
+        type={type} 
+        value={value} 
+        onChange={onInputChange}
+      />
     </div>
   );
 };
 
-const List = ({list}) => {
+const List = ({list, onRemoveItem}) => {
   return (
     <ul>
         {
-          list.map(({objectID, ...listItem}) => (
+          list.map((listItem) => (
             <Item 
-              key={objectID}
+              key={listItem.objectID}
               {...listItem}
+              onRemoveItem={onRemoveItem}
             />
           ))
         }
@@ -97,7 +128,8 @@ const List = ({list}) => {
   );
 } 
 
-const Item = ({title, url, author, num_comments, points}) => {
+const Item = ({objectID, title, url, author, num_comments, points, onRemoveItem}) => {
+   
   return (
     <li>
       <span>
@@ -106,6 +138,9 @@ const Item = ({title, url, author, num_comments, points}) => {
       <span> {author}</span>
       <span> {num_comments}</span>
       <span> {points}</span>
+      <span>
+        <button type="button" onClick={() => onRemoveItem(objectID)}>Dismiss</button>
+      </span>
     </li>
   );
 };
