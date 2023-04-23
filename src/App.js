@@ -8,11 +8,9 @@ const useSemiPersistentState = (key, initialState) => {
   }, [value, key]);
 
   return [value, setValue];
-;}
-
+};
 
 const App = () => {
-
   const initialStories = [
     {
       title: "React",
@@ -40,14 +38,32 @@ const App = () => {
     },
   ];
 
+  const getAsyncStories = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: {
+            stories: initialStories,
+          },
+        });
+      }, 2000);
+    });
+  };
+
   /* 
     ======================
     =       HOOKS        =
     ======================     
   */
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
-  const [stories, setStories] = useState(initialStories);
-  
+  const [stories, setStories] = useState([]);
+
+  useEffect(() => {
+    getAsyncStories().then((result) => {
+      setStories(result.data.stories);
+    });
+  }, []);
+
   /* 
     ======================
     =      HANDLERS      =
@@ -68,68 +84,82 @@ const App = () => {
     =       HELPERS      =
     ======================     
   */
-  const searchedStories = stories.filter((story) => (story.title.toLowerCase()).includes(searchTerm.toLowerCase().trim()));
+  const searchedStories = stories.filter((story) =>
+    story.title.toLowerCase().includes(searchTerm.toLowerCase().trim())
+  );
 
   return (
     <>
       <h1>My Hacker Stories</h1>
-      <InputWithLabel 
-        id="search" 
-        value={searchTerm} 
+      <InputWithLabel
+        id="search"
+        value={searchTerm}
         onInputChange={handleSearch}
         isFocused
       >
-        <strong>Search:</strong>  
+        <strong>Search:</strong>
       </InputWithLabel>
       <hr />
-      <List list={searchedStories} onRemoveItem={handleRemoveStory}/>
+      <List list={searchedStories} onRemoveItem={handleRemoveStory} />
     </>
   );
 };
 
-const InputWithLabel = ({id, value, type="text", onInputChange, isFocused, children}) => {
+const InputWithLabel = ({
+  id,
+  value,
+  type = "text",
+  onInputChange,
+  isFocused,
+  children,
+}) => {
   //A
   const inputRef = useRef();
 
   useEffect(() => {
-    if(isFocused && inputRef.current) {
+    if (isFocused && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isFocused]);
-  
+
   return (
     <div>
       <label htmlFor={id}>{children}</label>
       &nbsp;
-      <input 
+      <input
         ref={inputRef}
-        id={id} 
-        type={type} 
-        value={value} 
+        id={id}
+        type={type}
+        value={value}
         onChange={onInputChange}
       />
     </div>
   );
 };
 
-const List = ({list, onRemoveItem}) => {
+const List = ({ list, onRemoveItem }) => {
   return (
     <ul>
-        {
-          list.map((listItem) => (
-            <Item 
-              key={listItem.objectID}
-              {...listItem}
-              onRemoveItem={onRemoveItem}
-            />
-          ))
-        }
+      {list.map((listItem) => (
+        <Item
+          key={listItem.objectID}
+          {...listItem}
+          onRemoveItem={onRemoveItem}
+        />
+      ))}
     </ul>
   );
-} 
+};
 
-const Item = ({objectID, title, url, author, num_comments, points, onRemoveItem}) => {
-   
+const Item = ({
+  objectID,
+  title,
+  url,
+  author,
+  num_comments,
+  points,
+  onRemoveItem,
+}) => {
   return (
     <li>
       <span>
@@ -139,12 +169,12 @@ const Item = ({objectID, title, url, author, num_comments, points, onRemoveItem}
       <span> {num_comments}</span>
       <span> {points}</span>
       <span>
-        <button type="button" onClick={() => onRemoveItem(objectID)}>Dismiss</button>
+        <button type="button" onClick={() => onRemoveItem(objectID)}>
+          Dismiss
+        </button>
       </span>
     </li>
   );
 };
 
-export { 
-  App as default, 
-};
+export { App as default };
