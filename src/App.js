@@ -62,7 +62,7 @@ const App = () => {
   useEffect(() => {
     dispatchStories({type: "STORIES_FETCH_INIT"});
 
-    fetch(`${API_ENDPOINT}react`) //B
+    fetch(`${API_ENDPOINT}${searchTerm}`) //B
     .then((response) => response.json()) //C
     .then((result) => {
       console.log(result);
@@ -73,7 +73,7 @@ const App = () => {
     }).catch(() => {
       dispatchStories({type: "STORIES_FETCH_FAILURE"});
     });
-  }, []);
+  }, [searchTerm]);
 
   /* 
     ======================
@@ -92,15 +92,6 @@ const App = () => {
     });  
   };
 
-  /* 
-    ======================
-    =       HELPERS      =
-    ======================     
-  */
-  const searchedStories = stories.data.filter((story) =>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase().trim())
-  );
-
   return (
     <>
       <h1>My Hacker Stories</h1>
@@ -117,7 +108,7 @@ const App = () => {
       {
         stories.isLoading ? 
         (<p>Loading...</p>) : 
-        (<List list={searchedStories} onRemoveItem={handleRemoveStory} />)
+        (<List list={stories.data} onRemoveItem={handleRemoveStory} />)
       }
 
     </>
