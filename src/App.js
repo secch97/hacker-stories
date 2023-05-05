@@ -43,47 +43,10 @@ const storiesReducer = (state, action) => {
   };
 };
 
+//A
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
+
 const App = () => {
-
-  const initialStories = [
-    {
-      title: "React",
-      url: "https://reactjs.org/",
-      author: "Jordan Walke",
-      num_comments: 3,
-      points: 4,
-      objectID: 0,
-    },
-    {
-      title: "Redux",
-      url: "https://redux.js.org/",
-      author: "Dan Abramov, Andrew Clark",
-      num_comments: 2,
-      points: 5,
-      objectID: 1,
-    },
-    {
-      title: "Road to React",
-      url: "https://www.roadtoreact.com/",
-      author: "Robin Wieruch",
-      num_comments: 10,
-      points: 15,
-      objectID: 2,
-    },
-  ];
-
-  const getAsyncStories = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          data: {
-            stories: initialStories,
-          },
-        });
-      }, 2000);
-    });
-  };
-
   /* 
     ======================
     =       HOOKS        =
@@ -99,10 +62,13 @@ const App = () => {
   useEffect(() => {
     dispatchStories({type: "STORIES_FETCH_INIT"});
 
-    getAsyncStories().then((result) => {
+    fetch(`${API_ENDPOINT}react`) //B
+    .then((response) => response.json()) //C
+    .then((result) => {
+      console.log(result);
       dispatchStories({
       type: "STORIES_FETCH_SUCCESS",
-      payload: result.data.stories
+      payload: result.hits //D
       });
     }).catch(() => {
       dispatchStories({type: "STORIES_FETCH_FAILURE"});
