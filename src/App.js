@@ -44,6 +44,7 @@ const storiesReducer = (state, action) => {
 };
 
 const App = () => {
+
   const initialStories = [
     {
       title: "React",
@@ -71,39 +72,38 @@ const App = () => {
     },
   ];
 
-const getAsyncStories = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        data: {
-          stories: initialStories,
-        },
-      });
-    }, 2000);
-  });
-};
+  const getAsyncStories = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: {
+            stories: initialStories,
+          },
+        });
+      }, 2000);
+    });
+  };
 
-/* 
-  ======================
-  =       HOOKS        =
-  ======================     
-*/
-const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
-const [stories, dispatchStories] = useReducer(storiesReducer, {
-    data: [],
-    isLoading: false,
-    isError: false
-  });
+  /* 
+    ======================
+    =       HOOKS        =
+    ======================     
+  */
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+  const [stories, dispatchStories] = useReducer(storiesReducer, {
+      data: [],
+      isLoading: false,
+      isError: false
+    });
 
-useEffect(() => {
-  dispatchStories({type: "STORIES_FETCH_INIT"});
+  useEffect(() => {
+    dispatchStories({type: "STORIES_FETCH_INIT"});
 
-  getAsyncStories().then((result) => {
+    getAsyncStories().then((result) => {
       dispatchStories({
-        type: "STORIES_FETCH_SUCCESS",
-        payload: result.data.stories
+      type: "STORIES_FETCH_SUCCESS",
+      payload: result.data.stories
       });
-
     }).catch(() => {
       dispatchStories({type: "STORIES_FETCH_FAILURE"});
     });
@@ -123,7 +123,8 @@ useEffect(() => {
     dispatchStories({
       type: "REMOVE_STORY",
       payload: objectID
-    });  };
+    });  
+  };
 
   /* 
     ======================
