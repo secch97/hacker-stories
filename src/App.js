@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(localStorage.getItem(key) ?? initialState);
@@ -43,96 +43,66 @@ const storiesReducer = (state, action) => {
   };
 };
 
+//A
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
+
 const App = () => {
-  const initialStories = [
-    {
-      title: "React",
-      url: "https://reactjs.org/",
-      author: "Jordan Walke",
-      num_comments: 3,
-      points: 4,
-      objectID: 0,
-    },
-    {
-      title: "Redux",
-      url: "https://redux.js.org/",
-      author: "Dan Abramov, Andrew Clark",
-      num_comments: 2,
-      points: 5,
-      objectID: 1,
-    },
-    {
-      title: "Road to React",
-      url: "https://www.roadtoreact.com/",
-      author: "Robin Wieruch",
-      num_comments: 10,
-      points: 15,
-      objectID: 2,
-    },
-  ];
+  /* 
+    ======================
+    =       HOOKS        =
+    ======================     
+  */
+  const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+  const [stories, dispatchStories] = useReducer(storiesReducer, {
+      data: [],
+      isLoading: false,
+      isError: false
+    });
 
-const getAsyncStories = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        data: {
-          stories: initialStories,
-        },
-      });
-    }, 2000);
-  });
-};
+  
+  const handleFetchStories = useCallback(()=>{
+    dispatchStories({type: "STORIES_FETCH_INIT"});
 
-/* 
-  ======================
-  =       HOOKS        =
-  ======================     
-*/
-const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
-const [stories, dispatchStories] = useReducer(storiesReducer, {
-    data: [],
-    isLoading: false,
-    isError: false
-  });
-
-useEffect(() => {
-  dispatchStories({type: "STORIES_FETCH_INIT"});
-
-  getAsyncStories().then((result) => {
+    fetch(url) //B
+    .then((response) => response.json()) //C
+    .then((result) => {
+      console.log(result);
       dispatchStories({
-        type: "STORIES_FETCH_SUCCESS",
-        payload: result.data.stories
+      type: "STORIES_FETCH_SUCCESS",
+      payload: result.hits //D
       });
-
     }).catch(() => {
       dispatchStories({type: "STORIES_FETCH_FAILURE"});
     });
-  }, []);
+  }, [url]);
+
+  useEffect(() => {
+    handleFetchStories();
+  }, [handleFetchStories]);
 
   /* 
     ======================
     =      HANDLERS      =
     ======================     
   */
-  const handleSearch = (event) => {
+
+
+  const handleSearchInput = (event) => {
     const newSearchTerm = event.target.value;
     setSearchTerm(newSearchTerm);
+  };
+
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
 
   const handleRemoveStory = (objectID) => {
     dispatchStories({
       type: "REMOVE_STORY",
       payload: objectID
-    });  };
-
-  /* 
-    ======================
-    =       HELPERS      =
-    ======================     
-  */
-  const searchedStories = stories.data.filter((story) =>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase().trim())
-  );
+    });  
+  };
 
   return (
     <>
@@ -140,17 +110,24 @@ useEffect(() => {
       <InputWithLabel
         id="search"
         value={searchTerm}
-        onInputChange={handleSearch}
+        onInputChange={handleSearchInput}
         isFocused
       >
         <strong>Search:</strong>
       </InputWithLabel>
+      <button
+        type="button"
+        disabled={!searchTerm}
+        onClick={handleSearchSubmit}  
+      >
+        Submit
+      </button>
       <hr />
       {stories.isError && (<p>Something went wrong...</p>)}
       {
         stories.isLoading ? 
         (<p>Loading...</p>) : 
-        (<List list={searchedStories} onRemoveItem={handleRemoveStory} />)
+        (<List list={stories.data} onRemoveItem={handleRemoveStory} />)
       }
 
     </>
