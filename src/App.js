@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import axios from "axios";
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(localStorage.getItem(key) ?? initialState);
@@ -64,13 +65,13 @@ const App = () => {
   const handleFetchStories = useCallback(()=>{
     dispatchStories({type: "STORIES_FETCH_INIT"});
 
-    fetch(url) //B
-    .then((response) => response.json()) //C
-    .then((result) => {
+    axios
+      .get(url)
+      .then((result) => {
       console.log(result);
       dispatchStories({
       type: "STORIES_FETCH_SUCCESS",
-      payload: result.hits //D
+      payload: result.data.hits //D
       });
     }).catch(() => {
       dispatchStories({type: "STORIES_FETCH_FAILURE"});
