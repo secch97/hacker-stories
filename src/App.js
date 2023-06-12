@@ -1,5 +1,81 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import axios from "axios";
+import styles from "./App.module.css";
+import styled from "styled-components";
+import { ReactComponent as Check } from "./check.svg";
+
+const StyledContainer = styled.div`
+  height: 100vw;
+  padding: 20px;
+  background: #83a4d4;
+  background: linear-gradient(to left, #b6fbff, #83a4d4);
+  color: #171212;
+`;
+
+const StyledHeadlinePrimary = styled.h1`
+  font-size: 48px;
+  font-weight: 300px;
+  letter-spacing: 2px;
+`;
+
+const StyledItem = styled.li`
+  display: flex;
+  align-items: center;
+  padding-bottom: 5px;
+`;
+
+const StyledColumn = styled.span`
+  padding: 0 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow ellipsis;
+
+  a {
+    color: inherit;
+  }
+
+  width: ${(props)=>props.width}
+`;
+
+const StyledButton = styled.button`
+  background: transparent;
+  border: 1px solid #171212;
+  padding: 5px;
+  cursor: pointer;
+  transition: all 0.1s ease-in;
+
+  &:hover {
+    background: #171212;
+    color: #ffffff;
+  }
+`; 
+
+const StyledButtonSmall = styled(StyledButton)`
+  padding: 5px;
+`;
+
+const StyledButtonLarge = styled(StyledButton)`
+  padding: 10px;
+`;
+
+const StyledSearchForm = styled.form`
+  padding: 10px 0px 20px 0px;
+  display: flex;
+  align-items: center;
+`;
+
+const StyledLabel = styled.label`
+border-top: 1px solid #171212;
+border-left: 1px solid #171212;
+padding-left: 5px;
+font-size: 24px;
+`;
+const StyledInput = styled.input`
+border: none;
+border-bottom: 1px solid #171212;
+background-color: transparent;
+font-size: 24px;
+`;
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = useState(localStorage.getItem(key) ?? initialState);
@@ -105,22 +181,20 @@ const App = () => {
   };
 
   return (
-    <>
-      <h1>My Hacker Stories</h1>
+    <StyledContainer>
+      <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
       <SearchForm 
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />
-      <hr />
       {stories.isError && (<p>Something went wrong...</p>)}
       {
         stories.isLoading ? 
         (<p>Loading...</p>) : 
         (<List list={stories.data} onRemoveItem={handleRemoveStory} />)
       }
-
-    </>
+    </StyledContainer>
   );
 };
 
@@ -143,14 +217,15 @@ const InputWithLabel = ({
 
   return (
     <div>
-      <label htmlFor={id}>{children}</label>
+      <StyledLabel htmlFor={id} className={styles.label}>{children}</StyledLabel>
       &nbsp;
-      <input
+      <StyledInput
         ref={inputRef}
         id={id}
         type={type}
         value={value}
         onChange={onInputChange}
+        className={styles.input}
       />
     </div>
   );
@@ -162,7 +237,7 @@ const SearchForm = ({
   onSearchSubmit
 }) => {
   return (
-    <form onSubmit={onSearchSubmit}>
+    <StyledSearchForm onSubmit={onSearchSubmit}>
       <InputWithLabel
         id="search"
         value={searchTerm}
@@ -171,8 +246,10 @@ const SearchForm = ({
       >
         <strong>Search: </strong>
       </InputWithLabel>
-      <button type="submit" disabled={!searchTerm}/>
-    </form>
+      <StyledButtonLarge type="submit" disabled={!searchTerm}>
+        Submit
+      </StyledButtonLarge>
+    </StyledSearchForm>
   );
 }
 
@@ -200,19 +277,22 @@ const Item = ({
   onRemoveItem,
 }) => {
   return (
-    <li>
-      <span>
+    <StyledItem>
+      <StyledColumn width="40%">
         <a href={url}>{title}</a>
-      </span>
-      <span> {author}</span>
-      <span> {num_comments}</span>
-      <span> {points}</span>
-      <span>
-        <button type="button" onClick={() => onRemoveItem(objectID)}>
-          Dismiss
-        </button>
-      </span>
-    </li>
+      </StyledColumn>
+      <StyledColumn width="30%"> {author}</StyledColumn>
+      <StyledColumn width="10%"> {num_comments}</StyledColumn>
+      <StyledColumn width="10%"> {points}</StyledColumn>
+      <StyledColumn width="10%"> 
+        <StyledButtonSmall 
+          type="button" 
+          onClick={() => onRemoveItem(objectID)}
+        >
+          <Check height="18px" width="18px"/>
+        </StyledButtonSmall>
+      </StyledColumn>
+    </StyledItem>
   );
 };
 
