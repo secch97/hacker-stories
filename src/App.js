@@ -2,7 +2,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import axios from "axios";
 import styles from "./App.module.css";
 import styled from "styled-components";
-import { ReactComponent as Check } from "./check.svg";
+import { memo } from "react";
 
 const StyledContainer = styled.div`
   height: 100vw;
@@ -173,13 +173,14 @@ const App = () => {
     event.preventDefault();
   };
 
-  const handleRemoveStory = (objectID) => {
+  const handleRemoveStory = useCallback((objectID) => {
     dispatchStories({
       type: "REMOVE_STORY",
       payload: objectID
     });  
-  };
+  }, []);
 
+  console.log("B:App");
   return (
     <StyledContainer>
       <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
@@ -253,8 +254,10 @@ const SearchForm = ({
   );
 }
 
-const List = ({ list, onRemoveItem }) => {
-  return (
+const List = memo(
+  ({ list, onRemoveItem }) => {
+  console.log("B:List");
+  return(
     <ul>
       {list.map((listItem) => (
         <Item
@@ -265,7 +268,8 @@ const List = ({ list, onRemoveItem }) => {
       ))}
     </ul>
   );
-};
+}
+);
 
 const Item = ({
   objectID,
@@ -289,7 +293,6 @@ const Item = ({
           type="button" 
           onClick={() => onRemoveItem(objectID)}
         >
-          <Check height="18px" width="18px"/>
         </StyledButtonSmall>
       </StyledColumn>
     </StyledItem>
