@@ -1,9 +1,9 @@
 describe('Something truthy and falsy', () => { 
   test('True to be true', () => { 
-    expect(true).toBe(true); 
+    expect(true).toBeTruthy(); 
   });
 
   test("false to be false", () => {
-    expect(false).toBe(true);
+    expect(false).toBeFalsy();
   });
  });
