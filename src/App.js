@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import axios from "axios";
 import styles from "./App.module.css";
 import styled from "styled-components";
@@ -123,6 +123,13 @@ const storiesReducer = (state, action) => {
 //A
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 
+const getSumComments = (stories) => {
+  console.log("C");
+  return stories.data.reduce(
+    (result, value) => result + value.num_comments, 0
+  );
+};
+
 const App = () => {
   /* 
     ======================
@@ -136,6 +143,7 @@ const App = () => {
       isLoading: false,
       isError: false
     });
+  
 
   
   const handleFetchStories = useCallback(async ()=>{
@@ -181,9 +189,14 @@ const App = () => {
   }, []);
 
   console.log("B:App");
+  const sumComments = useMemo(
+    () => getSumComments(stories),
+    [stories]
+  );
+
   return (
     <StyledContainer>
-      <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
+      <StyledHeadlinePrimary>My Hacker Stories with {sumComments}</StyledHeadlinePrimary>
       <SearchForm 
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
