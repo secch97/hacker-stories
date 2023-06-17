@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-debugging-utils */
 import React from 'react';
 
 import App, {
@@ -7,6 +8,13 @@ import App, {
   SearchForm, 
   InputWithLabel
 } from './App';
+
+import {
+  render,
+  screen,
+  fireEvent,
+  act
+} from "@testing-library/react"
 
 import axios from 'axios';
 
@@ -90,7 +98,6 @@ describe('storiesReducer', () => {
       };
 
       const result = await axios.get("https://hn.algolia.com/api/v1/search?query=React");
-      console.log(result.data.hits);
       const action = {
         type: "STORIES_FETCH_SUCCESS",
         payload: result.data.hits
@@ -103,10 +110,61 @@ describe('storiesReducer', () => {
         isLoading: false,
         isError: false
       };
-
       expect(newState).toStrictEqual(expectedState);
-
-
    });
-
  });
+
+ describe('Item component', () => { 
+    test('Should render item component properties', () => { 
+      render(<Item {...storyOne}/>);
+      screen.debug();
+      expect(screen.getByText("Jordan Walke")).toBeTruthy();
+      expect(screen.getByText("React")).toHaveAttribute("href", "https://reactjs.org");
+     });
+
+     test('Renders a clickable dismiss button', () => { 
+        render(<Item {...storyOne}></Item>);
+        expect(screen.getByRole("button")).toBeInTheDocument();
+      });
+
+      test('Clicking the dismiss button calls the callback handler', () => { 
+          const handleRemoveItem = jest.fn();
+
+          render(<Item {...storyOne} onRemoveItem={handleRemoveItem}></Item>);
+          fireEvent.click(screen.getByRole("button"));
+          expect(handleRemoveItem).toHaveBeenCalledTimes(1);
+       });
+  });
+
+  describe("SearchForm", () => {
+    const searchFormProps = {
+      searchTerm: "React",
+      onSearchInput: jest.fn(),
+      onSearchSubmit: jest.fn()
+    };
+
+    test('Renders the input field with its values', () => { 
+      render(<SearchForm {...searchFormProps}/>);
+      screen.debug();
+      expect(screen.getByDisplayValue("React")).toBeInTheDocument();
+     });
+
+     test("Renders the correct label", () => {
+      render(<SearchForm {...searchFormProps}/>);
+      expect(screen.getByLabelText(/Search/)).toBeInTheDocument();
+     });
+
+     test("Calls onSearchInput on input field change", ()=>{
+      render(<SearchForm {...searchFormProps}/>);
+      fireEvent.change(screen.getByDisplayValue("React"), {
+        target: {value: "Redux"}
+      });
+      expect(searchFormProps.onSearchInput).toHaveBeenCalledTimes(1);
+     });
+
+     test("Calls onSearchSubmit on button submit click", ()=>{
+      render(<SearchForm {...searchFormProps}></SearchForm>);
+      fireEvent.submit(screen.getByRole("button"));
+      expect(searchFormProps.onSearchSubmit).toHaveBeenCalledTimes(1);
+     });
+  });
