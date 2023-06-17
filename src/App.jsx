@@ -295,3 +295,4 @@ const Item = ({
 };
 
 export { App as default };
+export {storiesReducer, SearchForm, InputWithLabel, List, Item}
