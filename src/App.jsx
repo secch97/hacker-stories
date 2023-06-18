@@ -106,7 +106,7 @@ const storiesReducer = (state, action) => {
         ...state,
         isLoading: false,
         isError: true
-      }
+      };
     case "REMOVE_STORY":
       return {
         ...state,
@@ -145,8 +145,7 @@ const App = () => {
         type:"STORIES_FETCH_SUCCESS",
         payload: result.data.hits
       });
-    }
-    catch{
+    } catch(error){
       dispatchStories({type: "STORIES_FETCH_FAILURE"});
     }
   }, [url]);
@@ -288,6 +287,7 @@ const Item = ({
           type="button" 
           onClick={() => onRemoveItem(objectID)}
         >
+          Dismiss
         </StyledButtonSmall>
       </StyledColumn>
     </StyledItem>
