@@ -5,11 +5,10 @@ import React from 'react';
 
 import App, {
   storiesReducer, 
-  Item, 
-  List, 
-  SearchForm, 
-  InputWithLabel
 } from './App';
+
+import SearchForm from './SearchForm'
+import {Item} from './List'
 
 import {
   render,
