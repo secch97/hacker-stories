@@ -149,6 +149,12 @@ describe('storiesReducer', () => {
       fireEvent.submit(screen.getByRole("button"));
       expect(searchFormProps.onSearchSubmit).toHaveBeenCalledTimes(1);
      });
+
+     test('Renders snapshot', () => { 
+      const {container} = render(<SearchForm {...searchFormProps}></SearchForm>);
+      // eslint-disable-next-line testing-library/no-node-access
+      expect(container.firstChild).toMatchSnapshot();
+    });
   });
 
   describe('App', () => { 
@@ -263,4 +269,6 @@ describe('storiesReducer', () => {
         expect(screen.queryByText("Dan Abramov, Andrew Clark")).toBeNull();
         expect(screen.queryByText("Brendan Eich")).toBeInTheDocument();
        });
+
+
    });
