@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {StyledButton} from "./SearchForm";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { sortBy } from "lodash";
 
 const StyledItem = styled.li`
@@ -36,35 +36,39 @@ const SORTS = {
 
 const List = ({ list, onRemoveItem }) => {
 
-  const [sort, setSort] = useState("NONE");
+  const [sort, setSort] = useState({
+    sortKey: "NONE",
+    isReverse: false
+  });
 
   const handleSort = (sortKey) => {
-    setSort(sortKey);
+    const isReverse = sort.sortKey === sortKey && !sort.isReverse;
+    setSort({sortKey: sortKey, isReverse: isReverse});
   };
 
-  const sortFunction = SORTS[sort];
-  const sortedList = sortFunction(list);
+  const sortFunction = SORTS[sort.sortKey];
+  const sortedList = sort.isReverse ? sortFunction(list).reverse() : sortFunction(list);
 
   return (
     <ul>
       <StyledItem>
         <StyledColumn width="40%">
-          <button type="button" onClick={() => handleSort("TITLE")}>
+          <button style={sort.sortKey === "TITLE" ? {backgroundColor: "black", color: "white"}:{}} type="button" onClick={() => handleSort("TITLE")}>
             Title
           </button>
           </StyledColumn>
         <StyledColumn width="30%">
-          <button type="button" onClick={() => handleSort("AUTHOR")}>
+          <button style={sort.sortKey === "AUTHOR" ? {backgroundColor: "black", color: "white"}:{}} type="button" onClick={() => handleSort("AUTHOR")}>
             Author
           </button>
         </StyledColumn>
         <StyledColumn width="10%">
-          <button type="button" onClick={() => handleSort("COMMENT")}>
+          <button style={sort.sortKey === "COMMENT" ? {backgroundColor: "black", color: "white"}:{}} type="button" onClick={() => handleSort("COMMENT")}>
             Comments
           </button>
         </StyledColumn>
         <StyledColumn width="10%">
-          <button type="button" onClick={() => handleSort("POINT")}>
+          <button style={sort.sortKey === "POINT" ? {backgroundColor: "black", color: "white"}:{}} type="button" onClick={() => handleSort("POINT")}>
             Points
           </button>
         </StyledColumn>
