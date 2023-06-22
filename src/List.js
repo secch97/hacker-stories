@@ -1,5 +1,7 @@
 import styled from "styled-components";
-import StyledButton from "./SearchForm";
+import {StyledButton} from "./SearchForm";
+import { useState } from "react";
+import { sortBy } from "lodash";
 
 const StyledItem = styled.li`
   display: flex;
@@ -24,10 +26,51 @@ const StyledButtonSmall = styled(StyledButton)`
   padding: 5px;
 `;
 
+const SORTS = {
+  NONE: (list) => list,
+  TITLE: (list) => sortBy(list, "title"),
+  AUTHOR: (list) => sortBy(list, "author"),
+  COMMENT: (list) => sortBy(list, "num_comments").reverse(),
+  POINT: (list) => sortBy(list, "points").reverse()
+}
+
 const List = ({ list, onRemoveItem }) => {
+
+  const [sort, setSort] = useState("NONE");
+
+  const handleSort = (sortKey) => {
+    setSort(sortKey);
+  };
+
+  const sortFunction = SORTS[sort];
+  const sortedList = sortFunction(list);
+
   return (
     <ul>
-      {list.map((listItem) => (
+      <StyledItem>
+        <StyledColumn width="40%">
+          <button type="button" onClick={() => handleSort("TITLE")}>
+            Title
+          </button>
+          </StyledColumn>
+        <StyledColumn width="30%">
+          <button type="button" onClick={() => handleSort("AUTHOR")}>
+            Author
+          </button>
+        </StyledColumn>
+        <StyledColumn width="10%">
+          <button type="button" onClick={() => handleSort("COMMENT")}>
+            Comments
+          </button>
+        </StyledColumn>
+        <StyledColumn width="10%">
+          <button type="button" onClick={() => handleSort("POINT")}>
+            Points
+          </button>
+        </StyledColumn>
+        <StyledColumn width="10%">Actions</StyledColumn>
+      </StyledItem>
+      {sortedList.map((listItem) => (
         <Item
           key={listItem.objectID}
           {...listItem}
@@ -52,9 +95,9 @@ const Item = ({
       <StyledColumn width="40%">
         <a href={url}>{title}</a>
       </StyledColumn>
-      <StyledColumn width="30%"> {author}</StyledColumn>
-      <StyledColumn width="10%"> {num_comments}</StyledColumn>
-      <StyledColumn width="10%"> {points}</StyledColumn>
+      <StyledColumn width="30%">{author}</StyledColumn>
+      <StyledColumn width="10%">{num_comments}</StyledColumn>
+      <StyledColumn width="10%">{points}</StyledColumn>
       <StyledColumn width="10%">
         <StyledButtonSmall type="button" onClick={() => onRemoveItem(objectID)}>
           Dismiss
