@@ -40,6 +40,7 @@ const List = ({ list, onRemoveItem }) => {
     sortKey: "NONE",
     isReverse: false
   });
+  console.log(sort.sortKey);
 
   const handleSort = (sortKey) => {
     const isReverse = sort.sortKey === sortKey && !sort.isReverse;

@@ -62,6 +62,28 @@ const storiesReducer = (state, action) => {
 //A
 const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 
+const extractSearchTerm = (url) => url.replace(API_ENDPOINT, "");
+
+const getLastSearches = (urls) => urls
+  .reduce((result, url, index) => {
+    const searchTerm = extractSearchTerm(url);
+
+    if(index===0) {
+      return result.concat(searchTerm);
+    }
+
+    const previousSearchTerm = result[result.length-1];
+
+    if(searchTerm===previousSearchTerm){
+      return result;
+    } else {
+      return result.concat(searchTerm);
+    }
+  }, [])
+  .slice(-6, -1)
+
+const getUrl = (searchTerm) => `${API_ENDPOINT}${searchTerm}`;
+
 const App = () => {
   /* 
     ======================
@@ -69,7 +91,9 @@ const App = () => {
     ======================     
   */
   const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React");
-  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
+  const [urls, setUrls] = useState([
+    getUrl(searchTerm),
+  ]);
   const [stories, dispatchStories] = useReducer(storiesReducer, {
     data: [],
     isLoading: false,
@@ -79,7 +103,8 @@ const App = () => {
   const handleFetchStories = useCallback(async () => {
     dispatchStories({ type: "STORIES_FETCH_INIT" });
     try {
-      const result = await axios.get(url);
+      const lastUrl = urls[urls.length-1];
+      const result = await axios.get(lastUrl);
       dispatchStories({
         type: "STORIES_FETCH_SUCCESS",
         payload: result.data.hits,
@@ -87,7 +112,7 @@ const App = () => {
     } catch (error) {
       dispatchStories({ type: "STORIES_FETCH_FAILURE" });
     }
-  }, [url]);
+  }, [urls]);
 
   useEffect(() => {
     handleFetchStories();
@@ -105,7 +130,7 @@ const App = () => {
   };
 
   const handleSearchSubmit = (event) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`);
+    handleSearch(searchTerm);
     event.preventDefault();
   };
 
@@ -116,6 +141,18 @@ const App = () => {
     });
   };
 
+  const handleLastSearch = (searchTerm) => {
+    setSearchTerm(searchTerm);
+    handleSearch(searchTerm);
+  };
+
+  const handleSearch = (searchTerm) => {
+    const url = getUrl(searchTerm);
+    setUrls(urls.concat(url));
+  }
+
+  const lastSearches= getLastSearches(urls);
+
   return (
     <StyledContainer>
       <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
@@ -124,6 +161,15 @@ const App = () => {
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />
+      {lastSearches.map((searchTerm, index)=> (
+        <button
+          key={searchTerm+index}
+          type="button"
+          onClick={() => handleLastSearch(searchTerm)}
+        >
+          {searchTerm}
+        </button>  
+      ))}
       {stories.isError && <p>Something went wrong...</p>}
       {stories.isLoading ? (
         <p>Loading...</p>
